@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import models.Message;
+import models.Task;
 import models.validators.MessageValidator;
 import utils.DBUtil;
 
@@ -39,24 +39,23 @@ public class UpdateServlet extends HttpServlet {
         if(_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
 
-            // セッションスコープからメッセージのIDを取得して
-            // 該当のIDのメッセージ1件のみをデータベースから取得
-            Message m = em.find(Message.class, (Integer)(request.getSession().getAttribute("message_id")));
 
-            // フォームの内容を各プロパティに上書き
+            Task m = em.find(Task.class, (Integer)(request.getSession().getAttribute("Task_id")));
+
+
 
             String content = request.getParameter("content");
             m.setContent(content);
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-            m.setUpdated_at(currentTime);       // 更新日時のみ上書き
+            m.setUpdated_at(currentTime);
 
-            // バリデーションを実行してエラーがあったら編集画面のフォームに戻る
+
             List<String> errors = MessageValidator.validate(m);
             if(errors.size() > 0) {
                 em.close();
 
-                // フォームに初期値を設定、さらにエラーメッセージを送る
+
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("message", m);
                 request.setAttribute("errors", errors);
@@ -64,18 +63,17 @@ public class UpdateServlet extends HttpServlet {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/messages/edit.jsp");
                 rd.forward(request, response);
             } else {
-                // データベースを更新
                 em.getTransaction().begin();
                 em.getTransaction().commit();
                 request.getSession().setAttribute("flush", "更新が完了しました。");
                 em.close();
 
-                // セッションスコープ上の不要になったデータを削除
+
                 request.getSession().removeAttribute("message_id");
 
-                // indexページへリダイレクト
+
                 response.sendRedirect(request.getContextPath() + "/index");
             }
-     }  
+     }
   }
 }

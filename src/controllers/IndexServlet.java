@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import models.Message;
+import models.Task;
 import utils.DBUtil;
 
 /**
@@ -39,21 +39,20 @@ public class IndexServlet extends HttpServlet {
             page = Integer.parseInt(request.getParameter("page"));
         } catch(NumberFormatException e) {}
 
-        // 最大件数と開始位置を指定してメッセージを取得
-        List<Message> messages = em.createNamedQuery("getAllMessages", Message.class)
+        List<Task> messages = em.createNamedQuery("getAllMessages", Task.class)
                                    .setFirstResult(15 * (page - 1))
                                    .setMaxResults(15)
                                    .getResultList();
 
-        // 全件数を取得
+
         long messages_count = (long)em.createNamedQuery("getMessagesCount", Long.class)
                                       .getSingleResult();
 
         em.close();
 
         request.setAttribute("messages", messages);
-        request.setAttribute("messages_count", messages_count);     // 全件数
-        request.setAttribute("page", page);                         // ページ数
+        request.setAttribute("messages_count", messages_count);
+        request.setAttribute("page", page);
         if(request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
             request.getSession().removeAttribute("flush");
