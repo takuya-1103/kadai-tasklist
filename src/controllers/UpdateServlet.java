@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import models.Task;
-import models.validators.MessageValidator;
+import models.validators.TaskValidator;
 import utils.DBUtil;
 
 /**
@@ -51,16 +51,16 @@ public class UpdateServlet extends HttpServlet {
             m.setUpdated_at(currentTime);
 
 
-            List<String> errors = MessageValidator.validate(m);
+            List<String> errors = TaskValidator.validate(m);
             if(errors.size() > 0) {
                 em.close();
 
 
                 request.setAttribute("_token", request.getSession().getId());
-                request.setAttribute("message", m);
+                request.setAttribute("Task", m);
                 request.setAttribute("errors", errors);
 
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/messages/edit.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/Tasks/edit.jsp");
                 rd.forward(request, response);
             } else {
                 em.getTransaction().begin();
@@ -69,7 +69,7 @@ public class UpdateServlet extends HttpServlet {
                 em.close();
 
 
-                request.getSession().removeAttribute("message_id");
+                request.getSession().removeAttribute("Task_id");
 
 
                 response.sendRedirect(request.getContextPath() + "/index");

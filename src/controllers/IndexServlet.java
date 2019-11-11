@@ -39,19 +39,19 @@ public class IndexServlet extends HttpServlet {
             page = Integer.parseInt(request.getParameter("page"));
         } catch(NumberFormatException e) {}
 
-        List<Task> messages = em.createNamedQuery("getAllMessages", Task.class)
+        List<Task> Tasks = em.createNamedQuery("getAllTasks", Task.class)
                                    .setFirstResult(15 * (page - 1))
                                    .setMaxResults(15)
                                    .getResultList();
 
 
-        long messages_count = (long)em.createNamedQuery("getMessagesCount", Long.class)
+        long Tasks_count = (long)em.createNamedQuery("getTasksCount", Long.class)
                                       .getSingleResult();
 
         em.close();
 
-        request.setAttribute("messages", messages);
-        request.setAttribute("messages_count", messages_count);
+        request.setAttribute("Tasks", Tasks);
+        request.setAttribute("Tasks_count", Tasks_count);
         request.setAttribute("page", page);
         if(request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
@@ -59,7 +59,7 @@ public class IndexServlet extends HttpServlet {
         }
 
 
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/messages/index.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/Tasks/index.jsp");
         rd.forward(request, response);
     }
 }
